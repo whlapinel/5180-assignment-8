@@ -84,17 +84,33 @@ public class BillsFragment extends Fragment {
         return bills;
     }
 
+    public void setBills(ArrayList<Bill> bills) {
+        // TODO: onCreateView runs after this method and wipes all changes. Need to fix.
+        Log.d(TAG, "setBills: ");
+        for (Bill bill : bills) {
+            Log.d(TAG, "setBills: MainActivity bills: " + bill.getName());
+        }
+        mBills.clear();
+        mBills.addAll(bills);
+        for (Bill bill : mBills) {
+            Log.d(TAG, "setBills: BillsFragment bills: " + bill.getName());
+        }
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: ");
+        super.onCreate(savedInstanceState);
+
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: ");
         mBills.clear();
         mBills.addAll(mListener.getAllBills());
-        mBills.add(new Bill("Groceries", "Milk", new Date(124, 0, 1), 0.10, 25.00));
-        mBills.add(new Bill("Entertainment", "Movies", new Date(124, 4, 20), 0.0, 30.00));
-        mBills.add(new Bill("Dining", "Restaurant", new Date(124, 3, 10), 0.15, 75.00));
-        mBills.add(new Bill("Housing", "Rent", new Date(124, 2, 31), 0.05, 1000.00));
-        mBills.add(new Bill("Utilities", "Electricity", new Date(124, 1, 15), 0.0, 50.00));
         mBills = sortBills(mBills, sortAttribute, sortOrder);
         mAdapter = new BillsAdapter(getContext(), mBills);
         binding = FragmentBillsBinding.inflate(inflater, container, false);
@@ -171,11 +187,12 @@ public class BillsFragment extends Fragment {
             Log.d(TAG, "getView: ");
             View view = convertView;
             BillListItemBinding binding;
-            if (convertView != null) {
-                binding = BillListItemBinding.inflate(LayoutInflater.from(getContext()), parent, false);
-            } else {
+            if (convertView == null) {
                 binding = BillListItemBinding.inflate(LayoutInflater.from(getContext()), parent, false);
                 view = binding.getRoot();
+                view.setTag(binding);
+            } else {
+                binding = (BillListItemBinding) view.getTag();
             }
             Double discount = getItem(position).getDiscount();
             Double amount = getItem(position).getAmount();

@@ -124,7 +124,7 @@ public class CreateBillFragment extends Fragment {
                     return;
                 }
 
-                Bill bill = new Bill(selectedCategory, name, selectedBillDate, selectedDiscount, billAmount);
+                Bill bill = new Bill(selectedCategory, name, selectedBillDate, selectedDiscount/100, billAmount);
                 mListener.createBillSuccessful(bill);
             }
         });

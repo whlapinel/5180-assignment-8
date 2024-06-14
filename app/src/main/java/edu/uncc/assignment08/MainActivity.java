@@ -28,7 +28,11 @@ public class MainActivity extends AppCompatActivity implements BillsFragment.Bil
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        mBills.add(new Bill("Groceries", "Milk", new Date(124, 0, 1), 0.10, 25.00));
+        mBills.add(new Bill("Entertainment", "Movies", new Date(124, 4, 20), 0.0, 30.00));
+        mBills.add(new Bill("Dining", "Restaurant", new Date(124, 3, 10), 0.15, 75.00));
+        mBills.add(new Bill("Housing", "Rent", new Date(124, 2, 31), 0.05, 1000.00));
+        mBills.add(new Bill("Utilities", "Electricity", new Date(124, 1, 15), 0.0, 50.00));
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main, new BillsFragment(), "bills-fragment")
                 .commit();
@@ -97,7 +101,12 @@ public class MainActivity extends AppCompatActivity implements BillsFragment.Bil
 
     @Override
     public void createBillSuccessful(Bill bill) {
+        Log.d(TAG, "createBillSuccessful: " + bill.getName());
         mBills.add(bill);
+        BillsFragment billsFragment = (BillsFragment) getSupportFragmentManager().findFragmentByTag("bills-fragment");
+        if(billsFragment != null){
+            billsFragment.setBills(mBills);
+        }
         getSupportFragmentManager().popBackStack();
     }
 
