@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -100,6 +101,13 @@ public class BillsFragment extends Fragment {
         View view = binding.getRoot();
         ListView listView = binding.listView;
         listView.setAdapter(mAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Bill bill = mBills.get(position);
+                mListener.goToBillSummary(bill);
+            }
+        });
         return view;
     }
 
