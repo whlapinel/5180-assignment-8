@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
 import edu.uncc.assignment08.databinding.FragmentSelectCategoryBinding;
 
@@ -38,6 +39,10 @@ public class SelectCategoryFragment extends Fragment {
             public void onClick(View v) {
                 mListener.onCancelSelectCategory();
             }
+        });
+        binding.listView.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, mCategories));
+        binding.listView.setOnItemClickListener((parent, view1, position, id) -> {
+            mListener.selectCategory(mCategories[position]);
         });
 
 
