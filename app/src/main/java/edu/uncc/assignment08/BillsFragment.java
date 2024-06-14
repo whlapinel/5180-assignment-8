@@ -12,7 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,11 +50,16 @@ public class BillsFragment extends Fragment {
         Log.d(TAG, "onCreateView: ");
         mBills.clear();
         mBills.addAll(mListener.getAllBills());
-        mBills.add(new Bill("Groceries", "Marshmallows", Date.from(Instant.now()), 0.15, 30.50));
+        mBills.add(new Bill("Groceries", "Milk", new Date(124, 0, 1), 0.10, 25.00));
+        mBills.add(new Bill("Entertainment", "Movies", new Date(124, 4, 20), 0.0, 30.00));
+        mBills.add(new Bill("Dining", "Restaurant", new Date(124, 3, 10), 0.15, 75.00));
+        mBills.add(new Bill("Housing", "Rent", new Date(124, 2, 31), 0.05, 1000.00));
+        mBills.add(new Bill("Utilities", "Electricity", new Date(124, 1, 15), 0.0, 50.00));
         mAdapter = new BillsAdapter(getContext(), mBills);
         binding = FragmentBillsBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
-        binding.listView.setAdapter(mAdapter);
+        ListView listView = binding.listView;
+        listView.setAdapter(mAdapter);
         return view;
     }
 
@@ -64,11 +71,10 @@ public class BillsFragment extends Fragment {
 
         binding.textViewSortedBy.setText("Sorted By " + sortAttribute + " (" + sortOrder + ")");
 
-        binding.buttonClear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.clearAllBills();
-            }
+        binding.buttonClear.setOnClickListener(v -> {
+            mListener.clearAllBills();
+            mBills.clear();
+            mAdapter.notifyDataSetChanged();
         });
 
         binding.buttonNew.setOnClickListener(new View.OnClickListener() {
@@ -129,8 +135,21 @@ public class BillsFragment extends Fragment {
                 binding = BillListItemBinding.inflate(LayoutInflater.from(getContext()), parent, false);
                 view = binding.getRoot();
             }
+            Double discount = getItem(position).getDiscount();
+            Double amount = getItem(position).getAmount();
+            String amountString = String.format("%.2f", amount);
+            Double total = amount - discount * amount;
+            String totalString = String.format("%.2f", total);
+            String dollarDiscount = String.format("%.2f", discount * amount);
+            String discountPcString = String.format("%.0f", discount * 100);
+            String discountString = (discountPcString + "%" + " ($" + dollarDiscount + ")");
             binding.billListItemTitle.setText(getItem(position).getName());
-            binding.billAmount.setText("Bill Amount: $" + getItem(position).getAmount());
+            binding.billAmount.setText("Bill Amount: $" + amountString);
+            binding.billDiscount.setText("Discount: " + discountString);
+            binding.billTotal.setText("Total: $" + totalString);
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            binding.billDate.setText("Bill Date: " + sdf.format(getItem(position).getBillDate()));
+            binding.billCategory.setText("Category: " + getItem(position).getCategory());
             return view;
         }
     }

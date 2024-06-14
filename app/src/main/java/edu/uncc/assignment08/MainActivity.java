@@ -1,6 +1,7 @@
 package edu.uncc.assignment08;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,7 @@ public class MainActivity extends AppCompatActivity implements BillsFragment.Bil
         BillSummaryFragment.BillSummaryListener, SelectSortFragment.SortListener,
         CreateBillFragment.CreateBillListener, SelectCategoryFragment.SelectCategoryListener,
         SelectDiscountFragment.SelectDiscountListener, SelectBillDateFragment.SelectDateBillListener {
+    public static final String TAG = "MainActivity";
     ArrayList<Bill> mBills = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements BillsFragment.Bil
 
     @Override
     public void clearAllBills() {
+        Log.d(TAG, "clearAllBills: ");
         mBills.clear();
     }
 
