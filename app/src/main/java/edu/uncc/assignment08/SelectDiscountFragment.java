@@ -10,7 +10,10 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
+
+import java.util.ArrayList;
 
 import edu.uncc.assignment08.databinding.FragmentSelectDiscountBinding;
 
@@ -21,9 +24,16 @@ public class SelectDiscountFragment extends Fragment {
     }
 
     FragmentSelectDiscountBinding binding;
+    ArrayList<String> discounts = new ArrayList<>();
+    ArrayAdapter<String> adapter;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        discounts.add("10%");
+        discounts.add("15%");
+        discounts.add("18%");
+        discounts.add("Custom");
         binding = FragmentSelectDiscountBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -57,6 +67,19 @@ public class SelectDiscountFragment extends Fragment {
                 mListener.onCancelSelectDiscount();
             }
         });
+        binding.listView.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, discounts));
+        binding.listView.setOnItemClickListener((parent, view2, position, id) -> {
+            String discountString = discounts.get(position);
+            double discount;
+            if (discountString.endsWith("%")) {
+                discountString = discountString.substring(0, discountString.length() - 1);
+                discount = Double.parseDouble(discountString);
+            } else {
+                discount = binding.seekBar.getProgress();
+            }
+            mListener.onDiscountSelected(discount);
+        });
+
     }
 
     SelectDiscountListener mListener;
@@ -73,6 +96,8 @@ public class SelectDiscountFragment extends Fragment {
 
     interface SelectDiscountListener {
         void onDiscountSelected(double discount);
+
         void onCancelSelectDiscount();
     }
+
 }
