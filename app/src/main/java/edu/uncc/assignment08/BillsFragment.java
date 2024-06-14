@@ -17,6 +17,8 @@ import android.widget.ListView;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -44,6 +46,43 @@ public class BillsFragment extends Fragment {
         this.sortOrder = sortOrder;
     }
 
+    private ArrayList<Bill> sortBills(ArrayList<Bill> bills, String sortAttribute, String sortOrder) {
+        Log.d(TAG, "sortBills: ");
+        // Define a comparator based on the sortAttribute and sortOrder
+        Comparator<Bill> comparator = new Comparator<Bill>() {
+            @Override
+            public int compare(Bill bill1, Bill bill2) {
+                if (sortAttribute.equalsIgnoreCase("date")) {
+                    if (sortOrder.equalsIgnoreCase("asc")) {
+                        return bill1.getBillDate().compareTo(bill2.getBillDate());
+                    } else {
+                        return bill2.getBillDate().compareTo(bill1.getBillDate());
+                    }
+                } else if (sortAttribute.equalsIgnoreCase("discount")) {
+                    if (sortOrder.equalsIgnoreCase("asc")) {
+                        return Double.compare(bill1.getDiscount(), bill2.getDiscount());
+                    } else {
+                        return Double.compare(bill2.getDiscount(), bill1.getDiscount());
+                    }
+                } else if (sortAttribute.equalsIgnoreCase("category")) {
+                    if (sortOrder.equalsIgnoreCase("asc")) {
+                        return bill1.getCategory().compareToIgnoreCase(bill2.getCategory());
+                    } else {
+                        return bill2.getCategory().compareToIgnoreCase(bill1.getCategory());
+                    }
+                } else {
+                    // Handle invalid sortAttribute
+                    throw new IllegalArgumentException("Invalid sort attribute: " + sortAttribute);
+                }
+            }
+        };
+
+        // Sort the bills ArrayList using the defined comparator
+        bills.sort(comparator);
+
+        return bills;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,6 +94,7 @@ public class BillsFragment extends Fragment {
         mBills.add(new Bill("Dining", "Restaurant", new Date(124, 3, 10), 0.15, 75.00));
         mBills.add(new Bill("Housing", "Rent", new Date(124, 2, 31), 0.05, 1000.00));
         mBills.add(new Bill("Utilities", "Electricity", new Date(124, 1, 15), 0.0, 50.00));
+        mBills = sortBills(mBills, sortAttribute, sortOrder);
         mAdapter = new BillsAdapter(getContext(), mBills);
         binding = FragmentBillsBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
@@ -77,18 +117,12 @@ public class BillsFragment extends Fragment {
             mAdapter.notifyDataSetChanged();
         });
 
-        binding.buttonNew.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.gotoCreateBill();
-            }
+        binding.buttonNew.setOnClickListener(v -> {
+            mListener.gotoCreateBill();
         });
 
-        binding.buttonSort.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.gotoSortSelection();
-            }
+        binding.buttonSort.setOnClickListener(v -> {
+            mListener.gotoSortSelection();
         });
     }
 
